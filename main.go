@@ -42,6 +42,7 @@ func main() {
 	workerProgress := make([]int, numWorkers+1) // +1 because worker ID start at 1
 	totalWorkItems := make([]int, numWorkers+1)
 	progressDone := make(chan bool)
+	var elapsed time.Duration
 
 	go func() {
 		defer func() {
@@ -62,7 +63,7 @@ func main() {
 
 			if totalItems > 0 {
 				percentage := float64(totalProcessed) * 100 / float64(totalItems)
-				elapsed := time.Since(startTime)
+				elapsed = time.Since(startTime)
 				fmt.Printf("\rProgress: %.2f%% (%d/%d) - Elapsed: %s",
 					percentage, totalProcessed, totalItems, elapsed.Round(time.Millisecond))
 			}
@@ -81,7 +82,6 @@ func main() {
 	<-progressDone
 
 	// Print final results
-	elapsed := time.Since(startTime)
 	fmt.Printf("\n\nFound %d prime numbers in %s\n", len(primes), elapsed.Round(time.Millisecond))
 
 	// Sort primes (they will arrive out of order due to concurrent processing)
